@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>分组模板</title>
+		<link rel="stylesheet" href="../../component/pear/css/pear.css" />
+	</head>
+	<body class="pear-container">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<form class="layui-form" action="">
+					<div class="layui-form-item">
+						<div class="layui-form-item layui-inline">
+							<label class="layui-form-label">名称</label>
+							<div class="layui-input-inline">
+								<input type="text" name="name" placeholder="" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-form-item layui-inline">
+							<button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="user-query">
+								<i class="layui-icon layui-icon-search"></i>
+								查询
+							</button>
+							<button type="reset" class="pear-btn pear-btn-md">
+								<i class="layui-icon layui-icon-refresh"></i>
+								重置
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<table id="groups-template-table" lay-filter="groups-template-table"></table>
+			</div>
+		</div>
+
+		<script type="text/html" id="user-toolbar">
+			<button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
+		        <i class="layui-icon layui-icon-add-1"></i>
+		        新增
+		    </button>
+
+		</script>
+
+		<script type="text/html" id="user-bar">
+			<button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+		    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+
+		    <button class="pear-btn pear-btn-success pear-btn-sm" lay-event="batch_use" data-type="rss">批量应用</button>
+		</script>
+
+		<script type="text/html" id="format-language">
+			{{# if(d.language == "-1") { }}
+			全部
+			{{# }else{}}
+			{{d.language }}
+			{{# }}}
+		</script>
+		<script type="text/html" id="format-quality">
+			{{# if(d.quality == "-1") { }}
+			全部
+			{{# }else{}}
+			{{d.quality }}
+			{{# }}}
+		</script>
+		<script src="../../component/layui/layui.js"></script>
+		<script src="../../component/pear/pear.js"></script>
+		<script>
+			layui.use(['table', 'form', 'jquery','common'], function() {
+				let table = layui.table;
+				let form = layui.form;
+				let $ = layui.jquery;
+				let common = layui.common;
+
+				let MODULE_PATH = "operate-template/";
+
+
+				let cols = [
+					[{
+							type: 'checkbox',
+						},
+						{
+							title: '模板ID',
+							field: 'id',
+							align: 'left',
+							width: 80
+						},
+						{
+							title: '模板名称',
+							field: 'name',
+							align: 'left',
+						},
+
+						{
+							title: '语言',
+							field: 'language',
+							align: 'left',
+							templet:"#format-language"
+						},
+						{
+							title: '质量',
+							field: 'quality',
+							align: 'left',
+							templet:"#format-quality"
+
+						},
+						{
+							title: '过滤发布组',
+							field: 'filter_push_group',
+							align: 'left',
+
+						},
+						{
+							title: '操作',
+							toolbar: '#user-bar',
+							align: 'left',
+							width: 400
+						}
+					]
+				]
+
+				table.render({
+					elem: '#groups-template-table',
+					url: '/api/v1/groups/template/list',
+					page: true,
+					cols: cols,
+					skin: 'line',
+					toolbar: '#user-toolbar',
+					defaultToolbar: [{
+						title: '刷新',
+						layEvent: 'refresh',
+						icon: 'layui-icon-refresh',
+					}, 'filter', 'print', 'exports']
+				});
+
+
+
+				table.on('tool(groups-template-table)', function(obj) {
+					if (obj.event === 'remove') {
+						window.remove(obj);
+					} else if (obj.event === 'edit') {
+						window.edit(obj);
+					}else if (obj.event === 'batch_use') {
+						window.batchUse(obj);
+					}
+
+				});
+
+				window.refreshGroupItem = function(obj) {
+					refreshGroup(obj.data.id)
+				}
+
+				table.on('toolbar(groups-template-table)', function(obj) {
+					if (obj.event === 'add') {
+						window.add();
+					} else if (obj.event === 'refresh') {
+						window.refresh();
+					} else if (obj.event === 'batchRemove') {
+						window.batchRemove(obj);
+					}else if (obj.event === 'refresh_group') {
+						window.refreshGroup("");
+					}
+				});
+
+				window.batchUse = function(obj){
+					layer.open({
+						type: 2,
+						title: '批量应用',
+						shade: 0.1,
+						area: [common.isModile()?'100%':'660px', common.isModile()?'100%':'400px'],
+						content: MODULE_PATH + 'batch_use.html?id=' +obj.data.id
+					});
+				}
+
+				form.on('submit(user-query)', function(data) {
+					table.reload('groups-template-table', {
+						where: data.field,
+						page: {
+							curr:1
+						},
+					})
+					return false;
+				});
+
+				form.on('switch(user-enable)', function(obj) {
+					layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+				});
+
+				window.add = function() {
+					layer.open({
+						type: 2,
+						title: '新增',
+						shade: 0.1,
+						area: [common.isModile()?'100%':'660px', common.isModile()?'100%':'400px'],
+						content: MODULE_PATH + 'add.html'
+					});
+				}
+
+				window.edit = function(obj) {
+					layer.open({
+						type: 2,
+						title: '修改',
+						shade: 0.1,
+						area: [common.isModile()?'100%':'660px', common.isModile()?'100%':'400px'],
+						content: MODULE_PATH + 'edit.html?id='+obj.data.id
+					});
+				}
+
+				window.remove = function(obj) {
+					layer.confirm('确定要删除该数据('+obj.data["name"]+')吗?', {
+						icon: 3,
+						title: '提示'
+					}, function(index) {
+						layer.close(index);
+						let loading = layer.load();
+						$.ajax({
+							url: "/api/v1/groups/template/delete" ,
+							data:JSON.stringify({
+								id:obj.data['id'],
+							}),
+							contentType: 'application/json',
+							dataType: 'json',
+							type: 'post',
+							success: function(result) {
+								layer.close(loading);
+								if (result.code == 0) {
+									layer.msg(result.message, {
+										icon: 1,
+										time: 3000
+									}, function() {
+										// 刷新菜单
+										if (parent.parent.layui.admin){
+											parent.parent.layui.admin.menuRender(parent.parent.layui.admin.readConfig());
+										}
+
+										obj.del();
+									});
+								} else {
+									layer.msg(result.message, {
+										icon: 2,
+										time: 3000
+									});
+								}
+							}
+						})
+					});
+				}
+
+
+				window.refresh = function(param) {
+					table.reload('groups-template-table');
+				}
+
+			})
+		</script>
+	</body>
+</html>

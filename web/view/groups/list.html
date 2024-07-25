@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>分组管理</title>
+		<link rel="stylesheet" href="../../component/pear/css/pear.css" />
+	</head>
+	<body class="pear-container">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<form class="layui-form" action="">
+					<div class="layui-form-item">
+						<div class="layui-form-item layui-inline">
+							<label class="layui-form-label">名称</label>
+							<div class="layui-input-inline">
+								<input type="text" name="name" placeholder="" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-form-item layui-inline">
+							<button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="user-query">
+								<i class="layui-icon layui-icon-search"></i>
+								查询
+							</button>
+							<button type="reset" class="pear-btn pear-btn-md">
+								<i class="layui-icon layui-icon-refresh"></i>
+								重置
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<table id="groups-table" lay-filter="groups-table"></table>
+			</div>
+		</div>
+
+		<script type="text/html" id="user-toolbar">
+			<button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
+		        <i class="layui-icon layui-icon-add-1"></i>
+		        新增
+		    </button>
+			<button class="pear-btn pear-btn-warming pear-btn-md" lay-event="refresh_group">
+		        <i class="layui-icon layui-icon-refresh"></i>
+		        刷新Rss文件
+		    </button>
+<!--			<button class="pear-btn pear-btn-warming pear-btn-md" lay-event="create-indexer-all">-->
+<!--		        <i class="pear-icon pear-icon-forward"></i>-->
+<!--		        一键创建Sonarr全部分组RSS索引-->
+<!--		    </button>-->
+<!--			<button class="pear-btn pear-btn-warming pear-btn-md" lay-event="create-indexer-all-torznab" >-->
+<!--		        <i class="pear-icon pear-icon-forward"></i>-->
+<!--		        一键创建Sonarr全部分组Torznab索引-->
+<!--		    </button>-->
+			<p>全部分组RSS地址: <span class="group_all_rss"></span></p>
+			<p>当前分组Torznab地址: <span class="group_all_torznab"></span></p>
+<!--		    <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove">-->
+<!--		        <i class="layui-icon layui-icon-delete"></i>-->
+<!--		        删除-->
+<!--		    </button>-->
+		</script>
+
+		<script type="text/html" id="user-bar">
+			<button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+		    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+		    <button class="pear-btn pear-btn-success pear-btn-sm" lay-event="refresh-group"><i class="layui-icon layui-icon-refresh"></i></button>
+		    <button class="pear-btn pear-btn-success pear-btn-sm" lay-event="create-indexer" data-type="rss">创建Rss索引</button>
+		    <button class="pear-btn pear-btn-success pear-btn-sm" lay-event="create-indexer-torzanab" data-type="torzanab">创建Torznab索引</button>
+		</script>
+
+		<script type="text/html" id="groups-rss-item">
+			<a target="_blank" href="{{d.url}}">{{d.url}}</a>
+		</script>
+		<script type="text/html" id="groups-torznab-item">
+			<a target="_blank" href="{{d.torznab_url}}">{{d.torznab_url}}</a>
+		</script>
+
+		<script type="text/html" id="groups-auto-insert-sonarr-item">
+			{{# if(d.auto_insert_sonarr == "2") { }}
+			全量同步
+			{{# }else if(d.auto_insert_sonarr == "1"){ }}
+			最新媒体
+			{{# }else if(d.auto_insert_sonarr == "3"){ }}
+			指定Tag
+			{{# }else{}}
+			手动同步
+			{{# }}}
+		</script>
+		<script src="../../component/layui/layui.js"></script>
+		<script src="../../component/pear/pear.js"></script>
+		<script>
+			layui.use(['table', 'form', 'jquery','common'], function() {
+				let table = layui.table;
+				let form = layui.form;
+				let $ = layui.jquery;
+				let common = layui.common;
+
+				let MODULE_PATH = "operate/";
+
+
+				let cols = [
+					[{
+							type: 'checkbox',
+						},
+						{
+							title: '分组ID',
+							field: 'id',
+							align: 'left',
+							width: 80
+						},
+						{
+							title: '名称',
+							field: 'name',
+							align: 'left',
+							width: 200
+						},
+
+						{
+							title: '自动同步Sonarr',
+							field: 'auto_insert_sonarr',
+							align: 'left',
+							width: 150,
+							templet:'#groups-auto-insert-sonarr-item'
+						},
+						{
+							title: '指定Tags',
+							field: 'tags',
+							align: 'left',
+							width: 200,
+						},
+						{
+							title: '模板',
+							field: 'group_template_name',
+							align: 'left',
+							width: 200,
+						},
+						{
+							title: 'Rss订阅地址',
+							field: 'url',
+							align: 'left',
+							// width: 200,
+							templet:'#groups-rss-item'
+						},
+						{
+							title: 'Torznab订阅地址',
+							field: 'url',
+							align: 'left',
+							// width: 200,
+							templet:'#groups-torznab-item'
+						},
+						{
+							title: '操作',
+							toolbar: '#user-bar',
+							align: 'left',
+							width: 400
+						}
+					]
+				]
+
+				table.render({
+					elem: '#groups-table',
+					url: '/api/v1/groups/get',
+					page: true,
+					cols: cols,
+					skin: 'line',
+					toolbar: '#user-toolbar',
+					defaultToolbar: [{
+						title: '刷新',
+						layEvent: 'refresh',
+						icon: 'layui-icon-refresh',
+					}, 'filter', 'print', 'exports']
+				});
+
+
+				$.ajax({
+					url: "/api/v1/system/get",
+					dataType: 'json',
+					type: 'get',
+					success: function(result) {
+						setInterval(function () {
+							if (document.querySelector('.group_all_rss').innerText != result.data.http_addr+"/rss/group/group_all.xml"){
+								document.querySelector('.group_all_rss').innerHTML = "<a target='_blank' href='"+result.data.http_addr+"/rss/group/group_all.xml"+"'>"+ result.data.http_addr+"/rss/group/group_all.xml"+"</a>";
+							}
+
+							if (document.querySelector('.group_all_torznab').innerText != result.data.http_addr+"/torznab/xarr"){
+								document.querySelector('.group_all_torznab').innerHTML = "<a target='_blank' href='"+result.data.http_addr+"/torznab/xarr'>"+ result.data.http_addr+"/torznab/xarr</a>";
+							}
+						},300)
+					}
+				})
+
+
+
+				table.on('tool(groups-table)', function(obj) {
+					if (obj.event === 'remove') {
+						window.remove(obj);
+					} else if (obj.event === 'edit') {
+						window.edit(obj);
+					}else if (obj.event === 'create-indexer') {
+						window.createIndexer(obj);
+					}else if (obj.event === 'create-indexer-torzanab') {
+						window.createIndexer(obj,"torzanab");
+					}else if (obj.event === 'refresh-group') {
+						window.refreshGroupItem(obj);
+					}
+				});
+
+				window.refreshGroupItem = function(obj) {
+					refreshGroup(obj.data.id)
+				}
+
+				table.on('toolbar(groups-table)', function(obj) {
+					if (obj.event === 'add') {
+						window.add();
+					} else if (obj.event === 'refresh') {
+						window.refresh();
+					} else if (obj.event === 'batchRemove') {
+						window.batchRemove(obj);
+					}else if (obj.event === 'refresh_group') {
+						window.refreshGroup("");
+					}else if (obj.event === 'create-indexer-all') {
+						window.createIndexer(obj,"rss");
+					}else if (obj.event === 'create-indexer-all-torznab') {
+						window.createIndexer(obj,"torznab");
+					}
+				});
+
+				form.on('submit(user-query)', function(data) {
+					table.reload('groups-table', {
+						where: data.field,
+						page: {
+							curr:1
+						},
+					})
+					return false;
+				});
+
+				form.on('switch(user-enable)', function(obj) {
+					layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+				});
+
+				window.add = function() {
+					layer.open({
+						type: 2,
+						title: '新增',
+						shade: 0.1,
+						area: [common.isModile()?'100%':'660px', common.isModile()?'100%':'400px'],
+						content: MODULE_PATH + 'add.html'
+					});
+				}
+
+				window.edit = function(obj) {
+					layer.open({
+						type: 2,
+						title: '修改',
+						shade: 0.1,
+						area: [common.isModile()?'100%':'660px', common.isModile()?'100%':'400px'],
+						content: MODULE_PATH + 'edit.html?id='+obj.data.id
+					});
+				}
+
+				window.remove = function(obj) {
+					layer.confirm('确定要删除该数据('+obj.data["name"]+')吗?', {
+						icon: 3,
+						title: '提示'
+					}, function(index) {
+						layer.close(index);
+						let loading = layer.load();
+						$.ajax({
+							url: "/api/v1/groups/delete/" + obj.data['id'],
+							dataType: 'json',
+							type: 'delete',
+							success: function(result) {
+								layer.close(loading);
+								if (result.code == 0) {
+									layer.msg(result.message, {
+										icon: 1,
+										time: 3000
+									}, function() {
+										// 刷新菜单
+										if (parent.parent.layui.admin){
+											parent.parent.layui.admin.menuRender(parent.parent.layui.admin.readConfig());
+										}
+
+										obj.del();
+									});
+								} else {
+									layer.msg(result.message, {
+										icon: 2,
+										time: 3000
+									});
+								}
+							}
+						})
+					});
+				}
+
+				window.refreshGroup = function(id) {
+					let loading = layer.load();
+					$.ajax({
+						url: "/api/v1/groups/refresh?id="+id,
+						dataType: 'json',
+						type: 'get',
+						success: function (result) {
+							layer.close(loading);
+							if (result.code == 0) {
+								layer.msg(result.message, {
+									icon: 1,
+									time: 3000
+								});
+							} else {
+								layer.msg(result.message, {
+									icon: 2,
+									time: 3000
+								});
+							}
+						}
+					})
+				}
+
+				window.createIndexer = function(obj,t) {
+					let loading = layer.load();
+					$.ajax({
+						url: "/api/v1/groups/set-sonarr-index",
+						dataType: 'json',
+						type: 'post',
+						data:{
+							groupId:(obj.data && obj.data['id'])?obj.data['id']:"all",
+							type: t,
+						},
+						success: function (result) {
+							layer.close(loading);
+							if (result.code == 0) {
+								layer.msg(result.message, {
+									icon: 1,
+									time: 3000
+								});
+							} else {
+								layer.msg(result.message, {
+									icon: 2,
+									time: 3000
+								});
+							}
+						}
+					})
+				}
+
+				window.batchRemove = function(obj) {
+					
+					var checkIds = common.checkField(obj,'userId');
+					
+					if (checkIds === "") {
+						layer.msg("未选中数据", {
+							icon: 3,
+							time: 3000
+						});
+						return false;
+					}
+					
+					layer.confirm('确定要删除这些', {
+						icon: 3,
+						title: '提示'
+					}, function(index) {
+						layer.close(index);
+						let loading = layer.load();
+						$.ajax({
+							url: MODULE_PATH + "batchRemove/" + ids,
+							dataType: 'json',
+							type: 'delete',
+							success: function(result) {
+								layer.close(loading);
+								if (result.success) {
+									layer.msg(result.message, {
+										icon: 1,
+										time: 3000
+									}, function() {
+										table.reload('groups-table');
+									});
+								} else {
+									layer.msg(result.message, {
+										icon: 2,
+										time: 3000
+									});
+								}
+							}
+						})
+					});
+				}
+
+				window.refresh = function(param) {
+					table.reload('groups-table');
+				}
+
+			})
+		</script>
+	</body>
+</html>

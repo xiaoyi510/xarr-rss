@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>服务设置</title>
+    <link rel="stylesheet" href="../../component/pear/css/pear.css"/>
+</head>
+<body>
+<form class="layui-form" action="" lay-filter="setting-edit">
+
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="layui-card">
+                <div class="layui-card-header">服务设置</div>
+                <div class="layui-card-body">
+                    <div class="layui-card">
+                        <div class="layui-card-header">Sonarr</div>
+                        <div class="layui-card-body">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">主机地址</label>
+                                <div class="layui-input-block">
+                                    <input type="url" name="sonarr_host" lay-verify="required" required
+                                           autocomplete="off" placeholder="请输入域名 http[s]://xx.com"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">通信密钥</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="sonarr_apikey" lay-verify="required" required
+                                           autocomplete="off" placeholder="请输入Sonarr APIKEY"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">版本选择</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="sonarr_version" value="3" title="V3" >
+                                    <input type="radio" name="sonarr_version" value="4" title="V4">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">同步时间</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="sonarr_refresh_time" lay-verify="required" required
+                                           autocomplete="off" placeholder="同步时间单位分"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"></label>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary service-test"
+                                        data-event="sonarr-test">测试(需要保存)
+                                </button>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"></label>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary service-test"
+                                        data-event="sonarr-reload">手动刷新数据(需要保存)
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary service-test"
+                                        data-event="sonarr-reload-real">手动强制刷新数据
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-card">
+                        <div class="layui-card-header">TheMovieDb</div>
+                        <div class="layui-card-body">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">ApiKey</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="themoviedb_apikey" lay-verify="" required
+                                           autocomplete="off" placeholder="请输入TheMovieDb Apikey"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">代理</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="themoviedb_proxy_type" value="1" title="不使用代理">
+                                    <input type="radio" name="themoviedb_proxy_type" value="2" title="使用全局代理" >
+                                    <input type="radio" name="themoviedb_proxy_type" value="3" title="自定义" >
+
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">代理/HostIp</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="themoviedb_proxy" lay-verify="" autocomplete="off"
+                                           placeholder="可选 输入TheMovieDb Host Ip地址/代理地址 [http|socks5]://127.0.0.1"
+                                           class="layui-input">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"></label>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary service-test"
+                                        data-event="tmdb-test">测试(需要保存)
+                                </button>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"></label>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary service-test"
+                                        data-event="tmdb-reload">手动刷新数据(需要保存)
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary service-test"
+                                        data-event="tmdb-reload-real">手动强制刷新数据
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="layui-card">
+                        <div class="layui-card-header">qBittorrent</div>
+                        <div class="layui-card-body">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">主机地址</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="qbittorrent_host" lay-verify="" autocomplete="off"
+                                           placeholder="请输入 http[s]://xxx:123"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">用户名</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="qbittorrent_username" autocomplete="off"
+                                           placeholder="请输入Qbit 登录用户名"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">密码</label>
+                                <div class="layui-input-block">
+                                    <input type="password" name="qbittorrent_password" autocomplete="new-password"
+                                           placeholder="请输入Qbit 登录密码"
+                                           class="layui-input">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">是否修改单文件名</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="qbittorrent_rename_file" value="1" title="是" >
+                                    <input type="radio" name="qbittorrent_rename_file" value="2" title="否">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"></label>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary service-test"
+                                        data-event="qbit-test">测试(需要保存)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Transmission-->
+                    <div class="layui-card">
+                        <div class="layui-card-header">Transmission</div>
+                        <div class="layui-card-body">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">服务地址</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="transmission_host" lay-verify="" autocomplete="off"
+                                           placeholder="请输入 http[s]://xxx:123"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">用户名</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="transmission_username" autocomplete="off"
+                                           placeholder="请输入登录用户名 为空不填写"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">密码</label>
+                                <div class="layui-input-block">
+                                    <input type="password" name="transmission_password" autocomplete="off"
+                                           placeholder="请输入登录密码 为空不填写"
+                                           class="layui-input">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"></label>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary service-test"
+                                        data-event="transmision-test">测试(需要保存)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                    lay-filter="setting-save">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="pear-btn pear-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+<script src="../../component/layui/layui.js"></script>
+<script src="../../component/pear/pear.js"></script>
+<script src="../../component/xarr/xarr.js"></script>
+<script>
+    layui.use(['form', 'jquery', 'button'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        var button = layui.button;
+
+
+        $.ajax({
+            url: '/api/v1/service/get',
+            type: 'get',
+            success: function (result) {
+                if (result.code == 0) {
+                    form.val("setting-edit", {
+                        "qbittorrent_host": result.data.qbittorrent_host,
+                        "qbittorrent_password": result.data.qbittorrent_password,
+                        "qbittorrent_username": result.data.qbittorrent_username,
+                        "qbittorrent_rename_file": result.data.qbittorrent_rename_file,
+                        "sonarr_apikey": result.data.sonarr_apikey,
+                        "sonarr_refresh_time": result.data.sonarr_refresh_time,
+                        "sonarr_host": result.data.sonarr_host,
+                        "sonarr_version": result.data.sonarr_version,
+                        "themoviedb_apikey": result.data.themoviedb_apikey,
+                        "themoviedb_proxy": result.data.themoviedb_proxy,
+                        "themoviedb_proxy_type": parseInt(result.data.themoviedb_proxy_type),
+                        "transmission_host": result.data.transmission_host,
+                        "transmission_username": result.data.transmission_username,
+                        "transmission_password": result.data.transmission_password,
+                    });
+                } else if (result.code == 401) {
+                    layer.msg(result.message, {
+                        icon: 2,
+                        time: 3000
+                    });
+                    window.location.href = "/"
+                } else {
+                    layer.msg(result.message, {
+                        icon: 2,
+                        time: 3000
+                    });
+                }
+            }
+        })
+
+
+        $('.service-test').click(function () {
+            let event = $(this).data("event")
+            var dom = button.load({
+                elem: this,
+            })
+
+            $.ajax({
+                url: '/api/v1/service/' + event,
+                dataType: 'json',
+                success: function (result) {
+                    dom.stop();
+                    if (result.code == 0) {
+                        layer.msg(result.message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                    } else if (result.code == 401) {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                        window.location.href = "/"
+                    } else {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                    }
+                }
+            })
+
+        })
+
+
+        form.on('submit(setting-save)', function (data) {
+            $.ajax({
+                url: '/api/v1/service/save',
+                data: JSON.stringify(data.field),
+                dataType: 'json',
+                contentType: 'application/json',
+                type: 'post',
+                success: function (result) {
+                    if (result.code == 0) {
+                        layer.msg(result.message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                    } else if (result.code == 401) {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                        window.location.href = "/"
+                    } else {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+    })
+</script>
+<script>
+</script>
+</body>
+</html>

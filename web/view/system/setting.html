@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>系统设置</title>
+    <link rel="stylesheet" href="../../component/pear/css/pear.css"/>
+</head>
+<body class="pear-container">
+<form class="layui-form" action="" lay-filter="setting-edit">
+    <div class="layui-card">
+        <div class="layui-card-header">系统设置</div>
+        <div class="layui-card-body">
+            <div class="layui-form-item">
+                <label class="layui-form-label">监听端口(程序/容器内的端口)</label>
+                <div class="layui-input-block">
+                    <input type="number" name="http_listen_port" lay-verify="required" required autocomplete="off"
+                           placeholder="默认端口:8086 如非必要可不修改 端口必须大于1024 否则为默认8086"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">映射域名</label>
+                <div class="layui-input-block">
+                    <input type="url" name="http_addr" lay-verify="required" required autocomplete="off"
+                           placeholder="请输入映射后的域名 http[s]://xx.com"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理设置</label>
+                <div class="layui-input-block">
+                    <input type="text" name="global_proxy" lay-verify="" autocomplete="off"
+                           placeholder="填写格式 http|socks5://127.0.0.1:1234"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">动漫输出标题格式</label>
+                <div class="layui-input-block">
+                    <input type="text" name="echo_title_anime" lay-verify="" autocomplete="off"
+                           placeholder="不知道怎么填写的请勿操作"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">TV输出标题格式</label>
+                <div class="layui-input-block">
+                    <input type="text" name="echo_title_tv" lay-verify="" autocomplete="off" placeholder="不知道怎么填写的请勿操作"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">自动备份数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="backup_database_count" lay-verify="" autocomplete="off" placeholder="不知道怎么填写的请勿操作"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">自动备份间隔时间</label>
+                <div class="layui-input-block">
+                    <input type="number" name="backup_database_time" lay-verify="" autocomplete="off" placeholder="单位(小时)"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">Sonarr未监控不自动加入分组</label>
+                <div class="layui-input-block">
+<!--                    <input type="text" name="sonarr_unmonitored_rm_gmedia" lay-verify="" autocomplete="off" placeholder="0 关闭 1 开启"-->
+<!--                           class="layui-input">-->
+                    <input type="checkbox" name="sonarr_unmonitored_rm_gmedia" lay-skin="switch" lay-text="开|关" value="1">
+
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">Sonarr未监控自动删除分组规则</label>
+                <div class="layui-input-block">
+<!--                    <input type="text" name="sonarr_unmonitored_nadd_gmedia" lay-verify="" autocomplete="off" placeholder="0 关闭 1 开启"-->
+<!--                           class="layui-input">-->
+                    <input type="checkbox" name="sonarr_unmonitored_nadd_gmedia" lay-skin="switch" lay-text="开|关" value="1">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                    lay-filter="setting-export">
+                <i class="layui-icon layui-icon-export"></i>
+                导出配置
+            </button>
+            <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                    lay-filter="setting-save">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="pear-btn pear-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+<script src="../../component/layui/layui.js"></script>
+<script src="../../component/pear/pear.js"></script>
+<script src="../../component/xarr/xarr.js"></script>
+<script>
+
+    layui.use(['form', 'jquery'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        $.ajax({
+            url: '/api/v1/system/get',
+            type: 'get',
+            success: function (result) {
+                if (result.code == 0) {
+                    form.val("setting-edit", {
+                        "http_addr": result.data.http_addr,
+                        "http_listen_port": result.data.http_listen_port,
+                        "global_proxy": result.data.global_proxy,
+                        "echo_title_anime": result.data.echo_title_anime,
+                        "echo_title_tv": result.data.echo_title_tv,
+                        "backup_database_count": result.data.backup_database_count,
+                        "backup_database_time": result.data.backup_database_time,
+                        "sonarr_unmonitored_rm_gmedia": parseInt(result.data.sonarr_unmonitored_rm_gmedia),
+                        "sonarr_unmonitored_nadd_gmedia": parseInt(result.data.sonarr_unmonitored_nadd_gmedia),
+                    });
+                } else {
+                    layer.msg(result.message, {
+                        icon: 2,
+                        time: 3000
+                    });
+                }
+            }
+        })
+
+
+        form.on('submit(setting-save)', function (data) {
+            $.ajax({
+                url: '/api/v1/system/save',
+                data: JSON.stringify({
+                    http_addr: data.field.http_addr,
+                    global_proxy: data.field.global_proxy,
+                    echo_title_anime: data.field.echo_title_anime,
+                    echo_title_tv: data.field.echo_title_tv,
+                    sonarr_unmonitored_rm_gmedia: data.field.sonarr_unmonitored_rm_gmedia === undefined ? "0" : data.field.sonarr_unmonitored_rm_gmedia,
+                    sonarr_unmonitored_nadd_gmedia: data.field.sonarr_unmonitored_nadd_gmedia === undefined ? "0" : data.field.sonarr_unmonitored_nadd_gmedia,
+                    backup_database_count: parseInt(data.field.backup_database_count),
+                    backup_database_time: parseInt(data.field.backup_database_time),
+                    http_listen_port: parseInt(data.field.http_listen_port)
+
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
+                type: 'post',
+                success: function (result) {
+                    if (result.code == 0) {
+                        layer.msg(result.message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                    } else {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+
+        form.on('submit(setting-export)', function (data) {
+            $.ajax({
+                url: '/api/v1/system/export',
+                dataType: 'json',
+                contentType: 'application/json',
+                type: 'get',
+                success: function (result) {
+                    if (result.code == 0) {
+                        layer.msg("请保存配置文件",{icon:1,timeout:3000})
+                        exportRaw(JSON.stringify(result.data),"conf.json")
+                    } else {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+
+
+
+        function exportRaw(data, name) {
+            var urlObject = window.URL || window.webkitURL || window;
+            var export_blob = new Blob([data]);
+            var save_link = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
+            save_link.href = urlObject.createObjectURL(export_blob);
+            save_link.download = name; save_link.click();
+        }
+    })
+</script>
+<script>
+</script>
+</body>
+</html>

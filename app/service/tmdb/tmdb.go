@@ -1,0 +1,5 @@
+package tmdb
+
+func SyncMediaInfo() {
+
+}

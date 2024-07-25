@@ -1,0 +1,84 @@
+[
+  {
+    "id": 10,
+    "title": "首页",
+    "icon": "layui-icon layui-icon-console",
+    "type": 1,
+    "openType": "_iframe",
+    "href": "view/console/console1.html"
+  },
+  {
+    "id": 400,
+    "icon": "icon pear-icon pear-icon-setting",
+    "title": "系统设置",
+    "type": 1,
+    "href": "view/system/setting.html",
+    "openType": "_iframe"
+  },
+  {
+    "id": 500,
+    "icon": "icon pear-icon pear-icon-run-up",
+    "title": "服务设置",
+    "type": 1,
+    "href": "view/service/setting.html",
+    "openType": "_iframe"
+  },
+  {
+    "id": 501,
+    "icon": "icon pear-icon pear-icon-filter",
+    "title": "自定义识别词",
+    "type": 1,
+    "href": "view/words/rule.html",
+    "openType": "_iframe"
+  },
+  {
+    "id": 200,
+    "icon": "icon pear-icon pear-icon-save",
+    "title": "数据源",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 201,
+        "icon": "",
+        "title": "数据源",
+        "type": 1,
+        "href": "view/sources/list.html",
+        "openType": "_iframe"
+      },
+      {
+        "id": 203,
+        "icon": "icon pear-icon pear-icon-play",
+        "title": "Sonarr数据源",
+        "type": 1,
+        "href": "view/sonarr/medias.html",
+        "openType": "_iframe"
+      }
+    ]
+  },
+  {
+    "id": 300,
+    "icon": "icon pear-icon pear-icon-file-open",
+    "title": "分组",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 301,
+        "title": "管理分组",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/groups/list.html"
+      },
+      {
+        "id": 302,
+        "title": "管理模板",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/groups/template-list.html"
+      }
+    ]
+  }
+]

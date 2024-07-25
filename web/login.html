@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>XArr-Rss 登录</title>
+    <!-- 样 式 文 件 -->
+    <link rel="stylesheet" href="component/pear/css/pear.css"/>
+    <link rel="stylesheet" href="admin/css/other/login.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+</head>
+<!-- 代 码 结 构 -->
+<body>
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <img class="logo" src="admin/images/logo.png"/>
+        <div class="title">XArr-Rss</div>
+        <div class="desc">
+            XArr 家庭影院系列之Rss订阅剧集处理系统
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <input placeholder="请输入登录账号" lay-verify="required" hover class="layui-input" name="username"/>
+    </div>
+    <div class="layui-form-item">
+        <input placeholder="请输入登录密码" lay-verify="required" hover class="layui-input" name="password" type="password"/>
+    </div>
+    <div class="layui-form-item">
+        <input type="checkbox" name="remember" title="记住密码" lay-skin="primary" checked>
+        <a style="    display: block;    height: 18px;    line-height: 18px;    float: right;    margin-top: 10px;"
+           class="" href="https://xarr.52nyg.com/register"
+           target="_blank">点我注册账号</a>
+    </div>
+
+
+    <div class="layui-form-item">
+        <button type="button" class="pear-btn pear-btn-success login" lay-submit lay-filter="login">
+            登 入
+        </button>
+
+    </div>
+</form>
+<!-- 资 源 引 入 -->
+<script src="component/layui/layui.js"></script>
+<script src="component/pear/pear.js"></script>
+<script>
+    layui.use(['form', 'button', 'layer', 'popup', 'jquery'], function () {
+        var form = layui.form;
+        var button = layui.button;
+        var popup = layui.popup;
+        var $ = layui.jquery;
+
+        $('.layui-form').on('keyup', function (e) {
+            var evt = window.event || e;
+            if (evt.keyCode == 13) {
+                //回车事件
+                form.submit('login')
+            }
+        })
+
+        // 登 录 提 交
+        form.on('submit(login)', function (data) {
+            /// 验证
+            let username = document.querySelector("input[name='username']").value
+            let password = document.querySelector("input[name='password']").value
+            if (username == "" || password == "") {
+                layer.msg("请输入账号密码")
+                return
+            }
+
+
+            /// 登录
+            $.post("/api/v1/login", {
+                username: username,
+                password: password,
+                remember: document.querySelector("input[name='remember']:checked") != null
+            }, function (res) {
+                console.log(res)
+                if (res.code == 0) {
+                    // layer.msg(res.msg);
+
+                    popup.success(res.message, function () {
+                        location.href = "/"
+                    });
+                } else {
+                    layer.msg(res.message, {icon: 5});
+                }
+
+            })
+
+
+            /// 动画
+            button.load({
+                elem: '.login',
+                time: 1500,
+                // done: function() {
+                // 	popup.success("登录成功", function() {
+                // 		// location.href = "index.html"
+                // 	});
+                // }
+            })
+            return false;
+        });
+    })
+</script>
+</body>
+</html>

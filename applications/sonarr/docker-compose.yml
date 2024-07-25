@@ -1,0 +1,17 @@
+version: "2.1"
+services:
+  jackett:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Shanghai
+      - AUTO_UPDATE=true #optional
+    #      - HTTP_PROXY="http://10.10.102.105:20007"
+    volumes:
+      - /Users/xiaoyi510/Documents/docker_appdata/sonarr/config:/config
+      - /host_mnt/Volumes/data/media:/media
+    ports:
+      - 20001:8989
+    restart: unless-stopped

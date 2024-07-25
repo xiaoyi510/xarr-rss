@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>修改页面</title>
+		<link rel="stylesheet" href="../../../component/pear/css/pear.css" />
+	</head>
+	<body>
+		<form class="layui-form" action="" lay-filter="groups-edit" >
+			<div class="mainBox">
+				<div class="main-container">
+					<input type="hidden" name="id">
+					<div class="layui-form-item">
+						<label class="layui-form-label">名称</label>
+						<div class="layui-input-block">
+							<input type="text" name="name" lay-verify="name" autocomplete="off" placeholder="请输入数据源名称"
+								   class="layui-input">
+						</div>
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">Sonarr同步</label>
+						<div class="layui-input-block">
+							<input type="radio" name="auto_insert_sonarr" value="0" title="手动添加" checked lay-filter="auto_insert_sonarr">
+							<input type="radio" name="auto_insert_sonarr" value="1" title="最新媒体" lay-filter="auto_insert_sonarr">
+							<input type="radio" name="auto_insert_sonarr" value="2" title="全量同步" lay-filter="auto_insert_sonarr">
+							<input type="radio" name="auto_insert_sonarr" value="3" title="指定Tag" lay-filter="auto_insert_sonarr">
+							<br>
+							<p>全量同步 最新媒体 只会同步最新一季</p>
+							<p class="layui-font-red"><i class='layui-icon layui-icon-diamond'></i>&nbsp;赞助会员可用</p>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">筛选标签</label>
+						<div class="layui-input-block">
+							<input type="text" name="tags"  autocomplete="off" placeholder="请输入筛选的标签信息 多个逗号分割,正则表达式以reg:开头"
+								   class="layui-input">
+							<br>
+							<p>指定Tag时填写 多个逗号分割,与使用&,正则表达式以reg:开头</p>
+							<p class="layui-font-red"><i class='layui-icon layui-icon-diamond'></i>&nbsp;赞助会员可用</p>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">选择模板</label>
+						<div class="layui-input-block">
+							<select name="group_template_id" data-value="" id="group_template_id-list" lay-filter="group_template_id-list"
+									lay-search >
+								<option value="">请选择自动引入模板</option>
+							</select>
+							<br>
+							<p>当自动从sonarr创建时会自动引入此模板</p>
+							<p class="layui-font-red"><i class='layui-icon layui-icon-diamond'></i>&nbsp;赞助会员可用</p>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div class="bottom">
+				<div class="button-container">
+					<button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+						lay-filter="groups-save">
+						<i class="layui-icon layui-icon-ok"></i>
+						提交
+					</button>
+					<button type="reset" class="pear-btn pear-btn-sm">
+						<i class="layui-icon layui-icon-refresh"></i>
+						重置
+					</button>
+				</div>
+			</div>
+		</form>
+		<script src="../../../component/layui/layui.js"></script>
+		<script src="../../../component/pear/pear.js"></script>
+		<script src="../../../component/xarr/xarr.js"></script>
+		<script>
+			layui.use(['select','form', 'jquery'], function() {
+				let form = layui.form;
+				let $ = layui.jquery;
+				let select = layui.select;
+
+				$.ajax({
+					url:"/api/v1/groups/template/list",
+					dataType: 'json',
+					contentType: 'application/json',
+					success:function(result){
+						if(result.code == 0){
+							if (result.data.length > 0){
+								console.log(result.data)
+								result.data.forEach(function (v) {
+									$('#group_template_id-list').append('<option value="' + v.id + '">' + v.name + '</option>')
+								})
+							}
+
+							select.render();
+							form.render()
+						}
+					}
+				})
+
+				var id =GetQueryString("id")
+				if (id == false){
+					parent.layer.close(parent.layer.getFrameIndex(window
+							.name)); //关闭当前页
+					parent.layer.msg("没有id")
+					return
+				}else{
+					$.ajax({
+						url: '/api/v1/groups/get/'+id,
+						type: 'get',
+						success: function(result) {
+							if (result.code == 0) {
+								form.val("groups-edit", {
+									"name": result.data[0].name,
+									"tags": result.data[0].tags,
+									"auto_insert_sonarr": result.data[0].auto_insert_sonarr,
+									"group_template_id": parseInt(result.data[0].group_template_id)
+								});
+							} else {
+								layer.msg(result.message, {
+									icon: 2,
+									time: 3000
+								});
+							}
+						}
+					})
+				}
+
+
+				form.on('submit(groups-save)', function(data) {
+					$.ajax({
+						url: '/api/v1/groups/edit/'+id,
+						data: JSON.stringify({
+							id:id,
+							name:data.field.name,
+							auto_insert_sonarr:parseInt(data.field.auto_insert_sonarr),
+							tags:data.field.tags,
+							group_template_id:parseInt(data.field.group_template_id)
+						}),
+						dataType: 'json',
+						contentType: 'application/json',
+						type: 'post',
+						success: function(result) {
+							if (result.code == 0) {
+								layer.msg(result.message, {
+									icon: 1,
+									time: 3000
+								}, function() {
+									// 刷新菜单
+									if (parent.parent.layui.admin){
+										parent.parent.layui.admin.menuRender(parent.parent.layui.admin.readConfig());
+									}
+									parent.layer.close(parent.layer.getFrameIndex(window
+										.name)); //关闭当前页
+									parent.layui.table.reload("groups-table");
+								});
+							} else {
+								layer.msg(result.message, {
+									icon: 2,
+									time: 3000
+								});
+							}
+						}
+					})
+					return false;
+				});
+			})
+		</script>
+		<script>
+		</script>
+	</body>
+</html>

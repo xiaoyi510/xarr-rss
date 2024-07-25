@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自定义识别词</title>
+    <link rel="stylesheet" href="../../../component/pear/css/pear.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+</head>
+<body>
+<form class="layui-form" action="" lay-filter="sources-edit">
+    <div class="mainBox">
+        <div class="main-container">
+
+            <div>
+                <textarea name="words_rule" rows="20" placeholder="一行为一组" class="layui-textarea"></textarea>
+
+            </div>
+
+            <div class="layui-form-item">
+                <blockquote class="layui-elem-quote layui-quote-nm">
+<pre>
+一行一组,请注意[ => ]是一个整体 注意空格
+# 注释
+被替换内容 => 替换内容
+{regexp} => 正则表达式 => 替换内容
+
+
+案例
+
+# 全局替换
+简繁日内封 ASSx2 => 简繁日内封 ASS
+
+# 吹响吧
+# 吹响吧！上低音号 => 吹响吧
+{regexp} => (第(?&lt;season&gt;.*?)季) => Season ${season}
+{regexp} => 第(.*?)集 => Episode ${1}
+</pre>
+                </blockquote>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                    lay-filter="source-save" id="form-btn-save">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+
+        </div>
+    </div>
+</form>
+<script src="../../../component/layui/layui.js"></script>
+<script src="../../../component/pear/pear.js"></script>
+<script src="../../../component/xarr/xarr.js"></script>
+<script>
+    layui.use(['form', 'jquery', 'button'], function () {
+        let form = layui.form;
+        let button = layui.button;
+        let $ = layui.jquery;
+
+
+
+            $.ajax({
+                url: '/api/v1/system/words-rule',
+                type: 'get',
+                success: function (result) {
+                    if (result.code == 0) {
+                        form.val("sources-edit", {
+                            "words_rule": result.data
+
+                        });
+                    } else {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                    }
+                }
+            })
+
+
+
+        form.on('submit(source-save)', function (data) {
+            var dom = button.load({
+                elem: document.querySelector("#form-btn-save"),
+            })
+
+            console.log(data.field)
+            $.ajax({
+                url: '/api/v1/system/edit-words-rule' ,
+                data: JSON.stringify({
+                    words_rule: data.field.words_rule,
+
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
+                type: 'post',
+                success: function (result) {
+                    dom.stop();
+
+                    if (result.code == 0) {
+                        layer.msg(result.message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                    } else {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                    }
+                },
+                complete: function () {
+                    dom.stop();
+                }
+            })
+            return false;
+        });
+    })
+</script>
+<script>
+</script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑分组模板规则</title>
+    <link rel="stylesheet" href="../../../component/pear/css/pear.css"/>
+    <style>
+        .layui-elem-quote {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form" action="" lay-filter="group-medias-edit">
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="layui-row">
+                <div class="layui-col-md6">
+                    <input type="hidden" name="id">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">模板名称</label>
+                        <div class="layui-input-block" >
+                            <input type="text" name="name" required lay-verify="required" placeholder="请输入模板名称"
+                                   value="" autocomplete="off" class="layui-input" id="media-name" >
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">数据源选择</label>
+                        <div class="layui-input-block" id="sources-list">
+                            <input type="checkbox" lay-filter="sourcelistall" name="use_source[]" title="全部" value="-1"
+                                   lay-skin="primary">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">语言</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="language"
+                                   placeholder="请输入语言 为-1则为赞助会员功能自动解析"
+                                   value="" autocomplete="off" class="layui-input" id="media-language">
+                            <p>-1 为自动寻找信息(赞助会员可使用) 其余为手动指定语言</p>
+
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">质量</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="quality"
+                                   placeholder="请输入质量 为-1则为赞助会员功能自动解析"
+                                   value="" autocomplete="off" class="layui-input" id="media-quality">
+                            <p>-1 为自动寻找信息(赞助会员可使用) 其余为手动指定质量</p>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="color: red">动漫输出标题格式</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="echo_title_anime"  lay-verify="" placeholder="为空使用系统配置中的配置项"
+                                   value="" autocomplete="off" class="layui-input" id="echo_title_anime">
+                            <p>为空不覆盖(赞助会员可使用)</p>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="color: red">TV输出标题格式</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="echo_title_tv"  lay-verify="" placeholder="为空使用系统配置中的配置项"
+                                   value="" autocomplete="off" class="layui-input" id="echo_title_tv">
+                            <p>为空不覆盖(赞助会员可使用)</p>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">筛选发布组</label>
+                        <div class="layui-input-inline">
+
+                            <select name="filter_push_group" xm-select-search="" xm-select-search-type="local"
+                                    xm-select="select-filter_push_group" id="media-filter_push_group">
+
+                            </select>
+                            <p>为空不覆盖 可筛选对应的发布组 优先级高于下面匹配规则 不选择发布组则不处理</p>
+                        </div>
+                    </div>
+                    <div id="regList">
+                    </div>
+
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"></label>
+                        <div class="layui-input-inline">
+                            <button class="layui-btn layui-btn-warm" id="group-media-add-regex" type="button">添加匹配规则
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                    lay-filter="medias-save">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="pear-btn pear-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+<script src="../../../component/layui/layui.js"></script>
+<script src="../../../component/pear/pear.js"></script>
+<script src="../../../component/xarr/xarr.js"></script>
+<script src="../../../component/xarr/clipboard.min.js"></script>
+
+<div style="display: none" id="regItemTemplate">
+    <div class="layui-form-item  regItem" data-index="">
+        <hr style="max-width: 350px">
+        <label class="layui-form-label">规则</label>
+        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary regItemDelete">
+            删除<i class="layui-icon layui-icon-delete"></i>
+        </button>
+        <div class="layui-form-item">
+            <label class="layui-form-label">匹配类型</label>
+            <div class="layui-input-block">
+                <input type="radio" class="match_type" name="match_type" value="reg" title="正则表达式"
+                       lay-filter="match_type">
+                <i class='layui-icon layui-icon-diamond'></i><input type="radio" class="match_type" name="match_type"
+                                                                    lay-filter="match_type"
+                                                                    value="auto" title="全自动匹配标题">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label match-type-desc">正则表达式</label>
+            <div class="layui-input-block">
+                <div class="layui-input-inline" style="    width: calc(100% - 140px);">
+                    <input type="text" name="reg"  placeholder="请输入Golang正则表达式"
+                           autoComplete="off" class="layui-input input-reg">
+
+                </div>
+                <div class="layui-input-inline regType" style="width: 120px;display: none" >
+                    <select name="reg_type" lay-verify="" class="">
+                        <option value="1">默认,|规则</option>
+                        <option value="2">正则表达式</option>
+                    </select>
+                </div>
+                <hr style="border-bottom:none !important;">
+                <div class="layui-btn-group">
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary escape-reg">转义正则表达式内容</button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary replaceEpisode">替换选择文本为集标记
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger autoGetEpisode">自动获取集标记<i
+                            class="layui-icon layui-icon-diamond"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">偏移量</label>
+            <div class="layui-input-inline">
+                <input type="number" name="offset"  placeholder="集数 - 偏移量 = 最终集数"
+                       autoComplete="off" class="layui-input" value="0">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">季</label>
+            <div class="layui-input-inline">
+<!--                <select name="season" class="season" lay-verify="required">-->
+<!--                    <option value="-1">自动计算->赞助会员</option>-->
+<!--                </select>-->
+
+                <input type="number" name="season"  placeholder="-1 自动计算->赞助会员"
+                       autoComplete="off" class="layui-input" value="0">
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    layui.use(['select', 'form', 'jquery'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let select = layui.select;
+
+        let id = GetQueryString("id")
+
+        let maxRegIndex = 0;
+        let tempSourceText = ""
+        if (id == "" ) {
+            layer.msg("请求参数错误", {
+                icon: 2,
+                time: 3000
+            });
+            return
+        }
+
+        $.get("/api/v1/sources/get/", function (res) {
+            if (res.code == 0) {
+                res.data.forEach(function (v, k) {
+                    $('#sources-list').append('<input type="checkbox" name="use_source[]" value="' + v.id + '" title="' + v.name + '" lay-skin="primary">')
+                    $('#sources-tmp').append('<option value="' + v.id + '" >' + v.name + '</option>')
+
+                })
+
+                form.render()
+            }
+
+
+// 获取配置的发布组
+            $.get("/api/v1/group_push", function (res2) {
+                if (res2.code == 0) {
+                    res2.data.forEach(function (v, k) {
+                        $('#media-filter_push_group').append(new Option(v, v))
+                    })
+                }
+
+                // 加载详情页
+                $.get("/api/v1/groups/template/info?id="+id, function (res) {
+                    if (res.code == 0) {
+
+                        select.render();
+                        if (res.data.filter_push_group && res.data.filter_push_group.length > 0) {
+                            res.data.filter_push_group.forEach(function (v) {
+                                $('#media-filter_push_group option[value="' + v + '"]').attr("selected", true)
+                            })
+                        }
+
+                        res.data.use_source.forEach(function (v) {
+                            $('#sources-list input[value="' + v + '"]').attr("checked", true)
+                        })
+
+
+
+
+                        res.data.regex.forEach(function (v, k) {
+                            var elm = document.createElement("div")
+                            // 获取模板html
+                            elm.innerHTML = $('#regItemTemplate').html()
+                            elm.querySelector(".regItem").setAttribute("data-index", k)
+
+                            // 修改模板内容
+                            if (v.match_type == '') {
+                                v.match_type = 'reg'
+                            }
+                            elm.querySelector('input[name=reg]').setAttribute("value", v.reg)
+                            if(v.reg_type > 0){
+                                elm.querySelector('select[name=reg_type] option[value="'+v.reg_type+'"]').setAttribute("selected", 'true')
+                            }
+                            elm.querySelector('input[name=offset]').setAttribute("value", v.offset)
+                            elm.querySelector('input[name=match_type][value="' + v.match_type + '"]').setAttribute('checked', 'true')
+
+                            elm.querySelectorAll('input[name=match_type]').forEach(function (e) {
+                                e.name = "match_type[" + k + "]"
+                            })
+
+                            // if (elm.querySelector('select[name=season] option[value="' + v.season + '"]')) {
+                            //     elm.querySelector('select[name=season] option[value="' + v.season + '"]').setAttribute("selected", 'selected')
+                            // }
+                            elm.querySelector('input[name=season]').setAttribute("value", v.season)
+
+                            if (k > maxRegIndex) {
+                                maxRegIndex = k
+                            }
+                            matchTypeSelect(elm.querySelector(".regItem"), v.match_type)
+
+
+                            $("#regList").append(elm.innerHTML)
+                            elm.remove()
+
+                        })
+
+                        form.val("group-medias-edit", {
+                            "id": res.data.id
+                            , "name": res.data.name
+                            , "language": res.data.language
+                            , "quality": res.data.quality
+                            , "echo_title_anime": res.data.echo_title_anime
+                            , "echo_title_tv": res.data.echo_title_tv
+                            // , "filter_push_group": res.data.filter_push_group
+                        });
+                        console.log(select)
+                        select.render()
+                        form.render()
+
+                    }
+                })
+
+            })
+        })
+
+
+
+
+        form.on('radio(match_type)', function (data) {
+            matchTypeSelect(data.elem.parentElement.parentElement.parentElement, data.value)
+
+            form.render()
+        });
+
+        function matchTypeSelect(p, type) {
+            console.log(p)
+            var labelReg = p.querySelector(".match-type-desc")
+            var regInput = p.querySelector(".input-reg")
+
+            switch (type) {
+                case "auto":
+                    labelReg.innerHTML = "包含标题"
+                    regInput.placeholder = "填写正则匹配表达式"
+                    // 隐藏转义按钮
+                    // p.querySelector(".escape-reg").style.display = "none"
+                    p.querySelector(".replaceEpisode").style.display = "none"
+                    p.querySelector(".autoGetEpisode").style.display = "none"
+                    p.querySelector(".regType").style.display = "inline-block"
+                    p.querySelector(".input-reg").setAttribute("lay-verify", "")
+                    break;
+                default:
+                    // p.querySelector(".escape-reg").style.display = "inline-block"
+                    p.querySelector(".replaceEpisode").style.display = "inline-block"
+                    p.querySelector(".autoGetEpisode").style.display = "inline-block"
+                    p.querySelector(".regType").style.display = "none"
+                    p.querySelector(".input-reg").setAttribute("lay-verify", "required")
+
+                    labelReg.innerHTML = "正则表达式"
+                    regInput.placeholder = "请输入Golang正则表达式"
+            }
+        }
+
+        // 点击格式化
+        $('#regList').on("click", '.escape-reg', function () {
+            var regItem = $(this).parents('.regItem')
+            // 转义正则表达式
+            var reg = regItem.find("input[name=reg]")
+            reg.val(escapeRegExp(reg.val()))
+        })
+
+        // 点击全选数据源
+        form.on('checkbox(sourcelistall)', function (data) {
+            // console.log($(data.elem.parentElement).find('input[name="use_source[]"]'))
+            // if (data.elem.checked) {
+            //     $(data.elem.parentElement).find('input[name="use_source[]"]').prop("checked", true)
+            // } else {
+            //     $(data.elem.parentElement).find('input[name="use_source[]"]').prop("checked", false)
+            // }
+            // form.render('checkbox')
+        })
+
+        // 自动生成
+        $('#regList').on("click", '.autoGetEpisode', function () {
+            var regItem = $(this).parents('.regItem')
+            // 转义正则表达式
+            var reg = regItem.find("input[name=reg]")
+            var sonarr_id = regItem.parent().parent().find("select[name=sonarr_id]")
+            $.post("/api/v1/group-medias/auto-gen-reg", {
+                req_str: reg.val(),
+                sonarr_id: sonarr_id.val()
+            }, function (res) {
+                if (res.code == 0 && res.data != "") {
+                    reg.val(res.data)
+                    layer.msg("已查询到标题对应正则,正则只供参考,请确定正确后使用!", {
+                        icon: 1,
+                        time: 3000
+                    });
+                    return
+                }
+                layer.msg(res.msg, {
+                    icon: 2,
+                    time: 3000
+                });
+            })
+        })
+
+        // 替换剧集
+        $('#regList').on("click", '.replaceEpisode', function () {
+            var regItem = $(this).parents('.regItem')
+            // 转义正则表达式
+            var reg = regItem.find("input[name=reg]")
+            if (reg[0]) {
+                let [start, end, text] = getSelectPosition(reg[0])
+                if (start > -1 && end > -1) {
+                    let str = reg.val()
+                    reg.val(str.substr(0, start) + '(?<episode>\\d+)' + str.substr(end))
+                    reg[0].setSelectionRange(start, end)
+                    layer.msg("替换成功", {
+                        icon: 1,
+                        time: 3000
+                    });
+                } else {
+                    layer.msg("请选择到正则表达式内的集数", {
+                        icon: 2,
+                        time: 3000
+                    });
+                }
+            }
+
+        })
+
+        // 删除
+        $('#regList').on("click", '.regItemDelete', function () {
+            $(this).parent().remove()
+        })
+
+        // 添加规则
+        $('#group-media-add-regex').click(function () {
+            maxRegIndex++
+            var elm = document.createElement("div")
+            // 获取模板html
+            elm.innerHTML = $('#regItemTemplate').html()
+            // 修改索引
+            elm.querySelector(".regItem").setAttribute("data-index", maxRegIndex)
+            elm.querySelector(".match_type").setAttribute("checked", '')
+            // 修改名字
+            elm.querySelectorAll('input[name=match_type]').forEach(function (e) {
+                e.name = "match_type[" + maxRegIndex + "]"
+            })
+
+            // 追加元素
+            $('#regList').append(elm.innerHTML)
+            elm.remove()
+            form.render()
+        })
+
+        form.on('submit(medias-save)', function (data) {
+            let use_source = [];
+
+            // 寻找选择源
+            let input = document.querySelectorAll('input[name="use_source[]"]:checked');
+            input.forEach(function (v) {
+                use_source.push(v.value)
+            })
+
+            // 寻找规则列表
+            let regexList = document.querySelectorAll("#regList .regItem")
+            let regList = []
+            regexList.forEach(function (v) {
+                let item = {
+                    reg: "",
+                    reg_type: 1,
+                    match_type: "reg",
+                    offset: 0,
+                    season: 0,
+                }
+
+                item['reg'] = v.querySelector("input[name=reg]").value
+                item['reg_type'] = parseInt(v.querySelector("select[name=reg_type]").value)
+                item['match_type'] = v.querySelector(".match_type:checked").value
+                item['offset'] = parseInt(v.querySelector("input[name=offset]").value)
+                item['season'] = parseInt(v.querySelector("input[name=season]").value)
+                regList.push(item)
+            })
+
+            $.ajax({
+                url: '/api/v1/groups/template/edit',
+                data: JSON.stringify({
+                    id: parseInt(data.field.id),
+                    name: data.field.name,
+                    language: data.field.language,
+                    quality: data.field.quality,
+                    echo_title_anime: data.field.echo_title_anime,
+                    echo_title_tv: data.field.echo_title_tv,
+                    use_source: use_source,
+                    filter_push_group: select.value('select-filter_push_group').map((item) => item.value),
+                    regex: regList,
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
+                traditional: true,
+                type: 'post',
+                success: function (result) {
+                    if (result.code == 0) {
+                        layer.msg(result.message, {
+                            icon: 1,
+                            time: 3000
+                        }, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window
+                                .name)); //关闭当前页
+                            parent.layui.table.reload("groups-template-table");
+                        });
+                    } else {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+    })
+</script>
+
+</body>
+</html>

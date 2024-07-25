@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>下载更名任务记录</title>
+	<link rel="stylesheet" href="../../component/pear/css/pear.css" />
+</head>
+<body class="pear-container">
+<div class="layui-card">
+	<div class="layui-card-body">
+		<form class="layui-form" action="">
+			<div class="layui-form-item">
+				<div class="layui-form-item layui-inline">
+					<label class="layui-form-label">名称</label>
+					<div class="layui-input-inline">
+						<input type="text" name="name" placeholder="请输入需要搜索的名称" class="layui-input">
+					</div>
+				</div>
+<!--				<div class="layui-form-item layui-inline">-->
+<!--					<label class="layui-form-label">Rss订阅地址</label>-->
+<!--					<div class="layui-input-inline">-->
+<!--						<input type="text" name="url" placeholder="请输入需要搜索的订阅url" class="layui-input">-->
+<!--					</div>-->
+<!--				</div>-->
+				<div class="layui-form-item layui-inline">
+					<button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="user-query">
+						<i class="layui-icon layui-icon-search"></i>
+						查询
+					</button>
+					<button type="reset" class="pear-btn pear-btn-md">
+						<i class="layui-icon layui-icon-refresh"></i>
+						重置
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<table id="source-table" lay-filter="source-table"></table>
+	</div>
+</div>
+
+<script type="text/html" id="user-toolbar">
+	<button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
+		<i class="layui-icon layui-icon-add-1"></i>
+		新增
+	</button>
+	<!--		    <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove">-->
+	<!--		        <i class="layui-icon layui-icon-delete"></i>-->
+	<!--		        删除-->
+	<!--		    </button>-->
+</script>
+
+<script type="text/html" id="user-bar">
+	<button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+	<button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+	<button class="pear-btn pear-btn-success pear-btn-sm" lay-event="refresh" title="刷新数据源"><i class="layui-icon layui-icon-refresh"></i></button>
+	<button class="pear-btn pear-btn-success pear-btn-sm" lay-event="open-source-media"  title="查询数据源数据">数据</button>
+</script>
+
+
+
+
+<script type="text/html" id="sources-last-refresh-time">
+	{{layui.util.toDateString(d.last_refresh_time * 1000, 'yyyy-MM-dd HH:mm:ss')}}
+</script>
+<script type="text/html" id="sources-last-regex-must-dot">
+	{{d.regex.must_dot_have}}
+</script>
+<script type="text/html" id="sources-last-regex-must-have">
+	{{d.regex.must_have}}
+</script>
+
+<script src="../../component/layui/layui.js"></script>
+<script src="../../component/pear/pear.js"></script>
+<script>
+	layui.use(['table', 'form', 'jquery','common'], function() {
+		let table = layui.table;
+		let form = layui.form;
+		let $ = layui.jquery;
+		let admin = parent.layui.admin;
+		let common = layui.common;
+
+		let MODULE_PATH = "operate/";
+
+		let cols = [
+			[{
+				type: 'checkbox'
+			},
+				{
+					title: 'Hash',
+					field: 'hash',
+					align: 'center',
+					width: 200
+				},
+				{
+					title: 'Rss订阅地址',
+					field: 'url',
+					align: 'center'
+				},
+				{
+					title: '使用代理',
+					field: 'proxy',
+					align: 'center'
+				},
+				{
+					title: '刷新间隔时间(分)',
+					field: 'refresh_time',
+					align: 'center'
+				},
+				{
+					title: '最大获取条数',
+					field: 'max_read_count',
+					align: 'center'
+				},
+				{
+					title: '必须包含',
+					// field: 'regex["must_have"]',
+					align: 'left',
+					templet: '#sources-last-regex-must-have'
+				},
+				{
+					title: '必须不含',
+					// field: 'regex["must_dot_have"]',
+					align: 'left',
+					templet: '#sources-last-regex-must-dot'
+				},
+				{
+					title: '下次刷新时间',
+					field: 'last_refresh_time',
+					align: 'center',
+					templet: '#sources-last-refresh-time'
+				},
+				{
+					title: '操作',
+					toolbar: '#user-bar',
+					align: 'center',
+					width: 250
+				}
+			]
+		]
+
+		table.render({
+			elem: '#source-table',
+			url: '/api/v1/sources/get',
+			page: true,
+			cols: cols,
+			skin: 'line',
+			toolbar: '#user-toolbar',
+			defaultToolbar: [{
+				title: '刷新',
+				layEvent: 'refresh',
+				icon: 'layui-icon-refresh',
+			}, 'filter', 'print', 'exports']
+		});
+
+		table.on('tool(source-table)', function(obj) {
+			if (obj.event === 'remove') {
+				window.remove(obj);
+			} else if (obj.event === 'edit') {
+				window.edit(obj);
+			}else if (obj.event === 'refresh') {
+				window.refreshSource(obj);
+			}else if (obj.event === 'open-source-media') {
+				window.openSourceMedia(obj);
+			}
+		});
+
+		table.on('toolbar(source-table)', function(obj) {
+			if (obj.event === 'add') {
+				window.add();
+			} else if (obj.event === 'refresh') {
+				window.refresh();
+			} else if (obj.event === 'batchRemove') {
+				window.batchRemove(obj);
+			}
+		});
+
+		form.on('submit(user-query)', function(data) {
+			table.reload('source-table', {
+				where: data.field,
+				page: {
+					curr:1
+				},
+			})
+			return false;
+		});
+
+		form.on('switch(user-enable)', function(obj) {
+			layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+		});
+
+		window.add = function() {
+			layer.open({
+				type: 2,
+				title: '新增',
+				shade: 0.1,
+				area: [common.isModile()?'100%':'500px', common.isModile()?'100%':'500px'],
+				content: MODULE_PATH + 'add.html'
+			});
+		}
+
+		window.openSourceMedia = function (obj) {
+			console.log(obj)
+			let url = "/view/sources/medias.html?sourceId="+obj.data.id
+			admin.addTab(obj.data.id + 1000,"数据源:"+obj.data.name+" 媒体列表",url)
+		}
+
+		window.edit = function(obj) {
+			layer.open({
+				type: 2,
+				title: '修改',
+				shade: 0.1,
+				area: [common.isModile()?'100%':'500px', common.isModile()?'100%':'500px'],
+				content: MODULE_PATH + 'edit.html?id='+obj.data.id
+			});
+		}
+
+		window.remove = function(obj) {
+			layer.confirm('确定要删除该数据('+obj.data["name"]+')吗?', {
+				icon: 3,
+				title: '提示'
+			}, function(index) {
+				layer.close(index);
+				let loading = layer.load();
+				$.ajax({
+					url: "/api/v1/sources/delete/" + obj.data['id'],
+					dataType: 'json',
+					type: 'delete',
+					success: function(result) {
+						layer.close(loading);
+						if (result.code == 0) {
+							layer.msg(result.message, {
+								icon: 1,
+								time: 3000
+							}, function() {
+								obj.del();
+							});
+						} else {
+							layer.msg(result.message, {
+								icon: 2,
+								time: 3000
+							});
+						}
+					}
+				})
+			});
+		}
+
+		window.refreshSource = function(obj) {
+			let loading = layer.load();
+			$.ajax({
+				url: "/api/v1/sources/refresh/" + obj.data['id'],
+				dataType: 'json',
+				type: 'get',
+				success: function (result) {
+					layer.close(loading);
+					if (result.code == 0) {
+						layer.msg(result.message, {
+							icon: 1,
+							time: 3000
+						});
+					} else {
+						layer.msg(result.message, {
+							icon: 2,
+							time: 3000
+						});
+					}
+				}
+			})
+		}
+
+		window.batchRemove = function(obj) {
+
+			var checkIds = common.checkField(obj,'userId');
+
+			if (checkIds === "") {
+				layer.msg("未选中数据", {
+					icon: 3,
+					time: 3000
+				});
+				return false;
+			}
+
+			layer.confirm('确定要删除这些', {
+				icon: 3,
+				title: '提示'
+			}, function(index) {
+				layer.close(index);
+				let loading = layer.load();
+				$.ajax({
+					url: MODULE_PATH + "batchRemove/" + ids,
+					dataType: 'json',
+					type: 'delete',
+					success: function(result) {
+						layer.close(loading);
+						if (result.success) {
+							layer.msg(result.message, {
+								icon: 1,
+								time: 3000
+							}, function() {
+								table.reload('source-table');
+							});
+						} else {
+							layer.msg(result.message, {
+								icon: 2,
+								time: 3000
+							});
+						}
+					}
+				})
+			});
+		}
+
+		window.refresh = function(param) {
+			table.reload('source-table');
+		}
+	})
+</script>
+</body>
+</html>

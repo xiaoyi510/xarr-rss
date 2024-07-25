@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>批量应用</title>
+    <link rel="stylesheet" href="../../../component/pear/css/pear.css"/>
+    <style>
+        .layui-elem-quote {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form" action="">
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="layui-row">
+                <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">选择分组</label>
+                        <div class="layui-input-block">
+
+                            <select lay-filter="group-list" id="group-list" name="group_id">
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="layui-col-md12">
+                    <table class="layui-hide" id="test" lay-filter="test"></table>
+
+<!--                    <script type="text/html" id="toolbarDemo">-->
+<!--                        <div class="layui-btn-container">-->
+<!--                            <button class="layui-btn layui-btn-sm" type="button" lay-event="getCheckData">获取选中行数据</button>-->
+<!--                        </div>-->
+<!--                    </script>-->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                    lay-filter="medias-save">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="pear-btn pear-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+<script src="../../../component/layui/layui.js"></script>
+<script src="../../../component/pear/pear.js"></script>
+<script src="../../../component/xarr/xarr.js"></script>
+<script src="../../../component/xarr/clipboard.min.js"></script>
+
+<script>
+    layui.use(['select', 'form', 'jquery','table'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let select = layui.select;
+        let table = layui.table;
+        let id = GetQueryString("id")
+        let maxRegIndex = 0;
+
+
+        $.get("/api/v1/groups/get/?page=1&limit=100",function (res){
+            if (res.code == 0) {
+                res.data.forEach(function (v,k){
+                    $('#group-list').append(new Option(v.name,v.id))
+                    if(k == 0){
+                        loadTable(v.id)
+                    }
+                })
+            }
+            select.render();
+            form.render()
+        })
+
+        form.on('select(group-list)', function (data) {
+            // 请求数据源数据
+            loadTable(data.value)
+        })
+
+        function loadTable(groupId){
+            table.render({
+                elem: '#test'
+
+                ,url:'/api/v1/groups/medias/'+groupId+'?page=1&limit=10&name='
+                ,title: '分组媒体数据'
+                ,cols: [[
+                    {type: 'checkbox', fixed: 'left'}
+                    ,{field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+                    ,{field:'title', title:'媒体'}
+                ]]
+                // ,page: true
+            });
+            console.log(table);
+        }
+        //头工具栏事件
+        function getCheckData(){
+            var checkStatus = table.checkStatus("test");
+            return checkStatus.data.map(function(item){
+                return item.id;
+            });
+        }
+
+
+        form.on('submit(medias-save)', function (data) {
+
+
+            $.ajax({
+                url: '/api/v1/groups/template/batch_use',
+                data: JSON.stringify({
+                    id: parseInt(id),
+                    group_media_ids: getCheckData()
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
+                traditional: true,
+                type: 'post',
+                success: function (result) {
+                    if (result.code == 0) {
+                        layer.msg(result.message, {
+                            icon: 1,
+                            time: 3000
+                        }, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window
+                                .name)); //关闭当前页
+                            parent.layui.table.reload("groups-medias-table");
+                        });
+                    } else {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+    })
+</script>
+
+</body>
+</html>

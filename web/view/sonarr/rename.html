@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sonarr数据源列表查看</title>
+  <link rel="stylesheet" href="../../component/pear/css/pear.css" />
+</head>
+<body class="pear-container">
+<div class="layui-card">
+  <div class="layui-card-body">
+    <form class="layui-form" action="" lay-filter="media-edit" >
+      <div class="layui-form-item">
+        <input type="hidden" name="id">
+        <div class="layui-form-item ">
+          <label class="layui-form-label">中文名称</label>
+          <div class="layui-input-block">
+            <input type="text" name="cn_title" placeholder="请输入新的中文名称" class="layui-input">
+          </div>
+        </div>
+        <div class="layui-form-item ">
+          <label class="layui-form-label">别名</label>
+          <div class="layui-input-block">
+            <input type="text" name="titles" placeholder="请输入别名以|分割" class="layui-input">
+          </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+          <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="media-save">
+            <i class="layui-icon layui-icon-edit"></i>
+            立即修改
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script src="../../component/layui/layui.js"></script>
+<script src="../../component/pear/pear.js"></script>
+<script src="../../component/xarr/xarr.js"></script>
+
+<script>
+  layui.use([ 'form', 'jquery','card'], function() {
+    let form = layui.form;
+    let $ = layui.jquery;
+    let sonarrId = GetQueryString("sonarr_id")
+    if (layui == "" ) {
+      layer.msg("请求参数错误", {
+        icon: 2,
+        time: 3000
+      });
+      return
+    }
+
+    $.get("/api/v1/medias/info?id="+sonarrId, function (res) {
+      console.log(res);
+      form.val("media-edit", {
+        "id": res.data.media_info.sonarr_id
+        , "cn_title": res.data.media_info.cn_title
+        , "titles": res.data.media_info.titles?res.data.media_info.titles.join('|'):''
+
+      });
+      form.render()
+    });
+
+
+    form.on('submit(media-save)', function (data) {
+      console.log(data);
+      // 立即去修改
+      $.post('/api/v1/medias/rename',data.field,function(res){
+        if(res.code == 0){
+          layer.msg('修改成功');
+        }else{
+          layer.msg(res.message)
+        }
+      });
+
+
+      return false
+
+    })
+  })
+</script>
+</body>
+</html>

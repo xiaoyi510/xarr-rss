@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Sonarr数据源列表查看</title>
+		<link rel="stylesheet" href="../../component/pear/css/pear.css" />
+	</head>
+	<body class="pear-container">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<form class="layui-form" action="">
+					<div class="layui-form-item">
+						<div class="layui-form-item layui-inline">
+							<label class="layui-form-label">名称</label>
+							<div class="layui-input-inline">
+								<input type="text" name="name" placeholder="请输入需要搜索的名称" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-form-item layui-inline">
+							<button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="sonarr-medias-query">
+								<i class="layui-icon layui-icon-search"></i>
+								查询
+							</button>
+							<button type="reset" class="pear-btn pear-btn-md">
+								<i class="layui-icon layui-icon-refresh"></i>
+								重置
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="layui-card">
+			<div class="layui-card-body">
+<!--				<table id="source-table" lay-filter="source-table"></table>-->
+				<div id="currentTableId"></div>
+
+			</div>
+		</div>
+
+		<script type="text/html" id="groups-medias-sonarr">
+			<a target="_blank" class="layui-btn layui-btn-sm layui-btn-primary" href="{{d.title_slug}}">点击前往</a>
+		</script>
+		<script type="text/html" id="sources-last-refresh-time">
+			{{layui.util.toDateString(d.last_refresh_time * 1000, 'yyyy-MM-dd HH:mm:ss')}}
+		</script>
+
+		<script src="../../component/layui/layui.js"></script>
+		<script src="../../component/pear/pear.js"></script>
+		<script>
+			layui.use(['table', 'form', 'jquery','common', 'card'], function() {
+				let table = layui.table;
+				let form = layui.form;
+				let $ = layui.jquery;
+				let common = layui.common;
+				let card = layui.card;
+
+
+				let MODULE_PATH = "operate/";
+				card.render({
+					elem: '#currentTableId',
+					url: '/api/v1/sonarr/medias', // 接口数据
+					data: [], // 静态数据
+					page: true, // 是否分页
+					limit: 18, // 每页数量
+					linenum: 6, // 每行数量
+					request: {
+						pageName: 'page' //页码的参数名称，默认：page
+						, limitName: 'limit' //每页数据量的参数名，默认：limit
+						, idName: 'sonarr_id'       //主键名称，默认：id
+						, titleName: 'cn_title' //标题名称，默认：title
+						, imageName: 'image' //图片地址，默认：image
+						, remarkName: 'overview' //备注名称，默认：remark
+						, timeName: 'year' //时间名称，默认：time
+					},
+					clickItem: function(data){ // 单击事件
+						console.log(data)
+						// 弹出修改框
+						layer.open({
+							type: 2,
+							title: '修改中文名称',
+							shade: 0.1,
+							area: ['500px', '500px'],
+							content:  'rename.html?sonarr_id='+data.id
+						});
+
+					}
+				})
+
+
+				form.on('submit(sonarr-medias-query)', function(data) {
+					card.reload('currentTableId', {
+						where: data.field
+					})
+					return false;
+				});
+
+			
+
+				window.refresh = function(param) {
+					card.reload('currentTableId');
+
+				}
+			})
+		</script>
+	</body>
+</html>

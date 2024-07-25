@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增数据源</title>
+    <link rel="stylesheet" href="../../../component/pear/css/pear.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+</head>
+<body>
+<form class="layui-form" action=""  lay-filter="sources-add" >
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="layui-form-item">
+                <label class="layui-form-label">名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入数据源名称"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">Rss订阅地址</label>
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <input type="url" name="url" lay-verify="required|url" autocomplete="off"
+                               placeholder="请输入Rss订阅地址"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <select name="contai-url" lay-filter="contai-url" autocomplete="off"
+                                lay-search="">
+                            <option value="">快捷选择内置数据源</option>
+                            <optgroup label="国内较快">
+                                <option value="https://mikanani.me/RSS/Classic">蜜柑计划</option>
+                                <option value="https://mikanime.tv/">蜜柑计划2</option>
+                                <option value="https://bangumi.moe/rss/latest">萌番组</option>
+                                <option value="https://acg.rip/.xml">ACG.RIP</option>
+                            </optgroup>
+                            <optgroup label="国内较慢(你懂的)">
+                                <option value="http://dmhy.org/topics/rss/rss.xml">動漫花園</option>
+                                <option value="http://kisssub.org/rss.xml">爱恋动漫</option>
+                                <option value="http://www.comicat.org/rss.xml">漫猫动漫</option>
+                                <option value="https://share.acgnx.se/rss.xml">末日动漫</option>
+                                <option value="https://eztv.re/ezrss.xml">eztv</option>
+                                <option value="https://rarbg.to/rssdd.php?categories=2;18;41;49">RARBG</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">自动检索</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="auto_search"  lay-filter="auto_search" title="不启用" value="" checked>
+                    <input type="radio" name="auto_search"  lay-filter="auto_search" title="蜜柑计划" value="mikan">
+
+                </div>
+                <p class="layui-font-red">
+                    填写选中站点的http[s]://域名/ 即可
+                    <i class='layui-icon layui-icon-diamond'></i>&nbsp;赞助会员可用
+                </p>
+
+
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">使用代理</label>
+                <div class="layui-input-block">
+                    <!--							<input type="text" name="proxy" autocomplete="off" placeholder="填写格式 http|socks5://127.0.0.1:1234"-->
+                    <!--								   class="layui-input">-->
+                    <input type="checkbox" name="use_proxy" lay-skin="switch" lay-text="开|关" value="1">
+
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">刷新间隔时间</label>
+                <div class="layui-input-block">
+                    <input type="number" name="refresh_time" lay-verify="required|number|refresh_time" min="5"
+                           autocomplete="off" placeholder="请输入间隔时间 单位分 最小5分钟"
+                           class="layui-input" value="5">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">单次最大采集条数</label>
+                <div class="layui-input-block">
+                    <input type="number" name="max_read_count" lay-verify="required|number" min="0" autocomplete="off"
+                           placeholder="请输入单次采集最大条数 0 不限制"
+                           class="layui-input" value="0">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">总共最大获取条数</label>
+                <div class="layui-input-block">
+                    <input type="number" name="max_count" lay-verify="required|number" min="0" autocomplete="off"
+                           placeholder="请输入最大获取条数 0 不限制"
+                           class="layui-input" value="0">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">缓存天数</label>
+                <div class="layui-input-block">
+                    <input type="number" name="cache_day" lay-verify="required|number" min="1" autocomplete="off"
+                           placeholder="请输入数据源缓存天数最小1天"
+                           class="layui-input" value="7">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理模式</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="proxy_site_type" value="1" title="默认" checked lay-filter="proxy_site_type">
+                    <input type="radio" name="proxy_site_type" value="2" title="Jacket" lay-filter="proxy_site_type">
+                    <input type="radio" name="proxy_site_type" value="3" title="Prowlarr" lay-filter="proxy_site_type">
+                    <br>
+<!--                    <p>Jacket/Prowlarr 使用Torznab模式</p>-->
+                    <p class="layui-font-red"><i class='layui-icon layui-icon-diamond'></i>&nbsp;赞助会员可用</p>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理站点apikey</label>
+                <div class="layui-input-block">
+                    <input type="text" name="proxy_site_api_key" value="" placeholder="请输入代理站点的Apikey"   class="layui-input" >
+                    <br>
+                    <!--                    <p>Jacket/Prowlarr 使用Torznab模式</p>-->
+                    <p class="layui-font-red"><i class='layui-icon layui-icon-diamond'></i>&nbsp;赞助会员可用</p>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题必须包含</label>
+                <div class="layui-input-block">
+                    <input type="text" name="regex_must_have" lay-verify="" autocomplete="off"
+                           placeholder="可选 格式为Golang正则表达式"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题必须不含</label>
+                <div class="layui-input-block">
+                    <input type="text" name="regex_must_dot_have" lay-verify="" autocomplete="off"
+                           placeholder="可选 格式为Golang正则表达式"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">URl加passkey</label>
+                <div class="layui-input-block">
+                    <input type="text" name="download_passkey" lay-verify="" autocomplete="off"
+                           placeholder="可选 PT站有些会用到"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <!--							<input type="text" name="proxy" autocomplete="off" placeholder="填写格式 http|socks5://127.0.0.1:1234"-->
+                    <!--								   class="layui-input">-->
+                    <input type="checkbox" name="status" checked lay-skin="switch" lay-text="开|关" value="1">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                    lay-filter="source-save" id="form-btn-save">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="pear-btn pear-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+<script src="../../../component/layui/layui.js"></script>
+<script src="../../../component/pear/pear.js"></script>
+<script>
+    layui.use(['form', 'jquery', 'button'], function () {
+        let form = layui.form;
+        let button = layui.button;
+        let $ = layui.jquery;
+
+        form.on('select(contai-url)', function (data) {
+            form.val("sources-add", {
+                "url": data.value
+            });
+        });
+
+        form.verify({
+            refresh_time: function (value) {
+                if (parseInt(value) < 5) {
+                    return "间隔时间必须大于等于5"
+                }
+            },
+            name: function (value) {
+                if (value.length < 3) {
+                    return "名称长度至少3位"
+                }
+            },
+        })
+
+        form.on('submit(source-save)', function (data) {
+            var dom = button.load({
+                elem: document.querySelector("#form-btn-save"),
+            })
+
+
+            $.ajax({
+                url: '/api/v1/sources/add',
+                data: JSON.stringify({
+                    name: data.field.name,
+                    max_read_count: parseInt(data.field.max_read_count),
+                    max_count: parseInt(data.field.max_count),
+                    cache_day: parseInt(data.field.cache_day),
+                    use_proxy: parseInt(data.field.use_proxy === undefined ? 0 : data.field.use_proxy),
+                    refresh_time: parseInt(data.field.refresh_time),
+                    status: parseInt(data.field.status),
+                    regex: {
+                        must_dot_have: data.field.regex_must_dot_have,
+                        must_have: data.field.regex_must_have,
+                    },
+                    url: data.field.url,
+                    proxy_site_type: parseInt(data.field.proxy_site_type),
+                    auto_search: data.field.auto_search,
+                    download_passkey: data.field.download_passkey,
+                    proxy_site_api_key: data.field.proxy_site_api_key,
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
+                type: 'post',
+                success: function (result) {
+                    dom.stop();
+
+                    if (result.code == 0) {
+                        layer.msg(result.message, {
+                            icon: 1,
+                            time: 3000
+                        }, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window
+                                .name)); //关闭当前页
+                            parent.layui.table.reload("source-table");
+                        });
+                    } else {
+                        layer.msg(result.message, {
+                            icon: 2,
+                            time: 3000
+                        });
+                    }
+                },
+                complete: function () {
+                    dom.stop();
+                }
+            })
+            return false;
+        });
+    })
+</script>
+<script>
+</script>
+</body>
+</html>
