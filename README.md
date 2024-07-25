@@ -4,7 +4,7 @@ XArr-Rss 剧集处理器.
 ## 前言
 项目是初学Golang语言时所写,高手勿喷~~
 项目有部分借鉴sonarr代码
-
+此项目可个人免费学习使用,禁止使用到商业用途!
 
 ## 使用教程
 https://xarr-doc.52nyg.com/xarr-rss
