@@ -36,7 +36,3 @@ QQ群号:996973766
 
 **前端**
 - layui
-- vue3
-- vue-router
-- vite
-- naiveui
