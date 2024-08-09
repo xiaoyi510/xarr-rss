@@ -10,7 +10,7 @@ XArr-Rss 剧集处理器.
 https://xarr-doc.52nyg.com/xarr-rss
 
 ## 交流群
-QQ群号:996973766
+QQ群号: 996973766
 
 ## 相关仓库
 - [qbit](https://github.com)
