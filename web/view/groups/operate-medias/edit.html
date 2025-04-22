@@ -403,6 +403,7 @@
             let seasonCount = $(data.elem).find("option[value=" + data.value + "]").data("season-count")
             $('.season').html("")
             $('.season').append("<option value=\"-1\">自动计算->赞助会员</option>")
+            $('.season').append("<option value=\"0\">Specials</option>")
             for (var i = seasonCount; i > 0; i--) {
                 $('.season').append("<option value=\"" + i + "\">" + i + "</option>")
             }
