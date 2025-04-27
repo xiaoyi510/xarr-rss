@@ -150,7 +150,8 @@ func (this MatchV2) ParseSourceItem(groupMedia *dbmodel.GroupMedia, groupRegex d
 
 				mediaParseInfo = torrentTileParse
 
-				if mediaParseInfo.Season == 0 {
+				// 只有在Season为0并且不是特殊指定要S00的情况下，才考虑将其设置为1
+				if mediaParseInfo.Season == 0 && groupRegex.Season != 0 {
 					if sonarrMediaInfo.SeasonCount <= 1 {
 						mediaParseInfo.Season = 1
 					}
@@ -212,7 +213,7 @@ func (this MatchV2) ParseSourceItem(groupMedia *dbmodel.GroupMedia, groupRegex d
 		}
 
 		// 计算整季多集长度
-		if mediaParseInfo.Season > 0 && mediaParseInfo.MinEpisode == 0 && mediaParseInfo.MaxEpisode == 0 {
+		if mediaParseInfo.Season >= 0 && mediaParseInfo.MinEpisode == 0 && mediaParseInfo.MaxEpisode == 0 {
 			if sourceItem.Enclosure.Length == "996973766" {
 				for _, season := range sonarrMediaInfo.Seasons {
 					if season.SeasonNumber == mediaParseInfo.Season {
@@ -223,7 +224,7 @@ func (this MatchV2) ParseSourceItem(groupMedia *dbmodel.GroupMedia, groupRegex d
 		}
 
 		// 计算连续剧集文件长度
-		if mediaParseInfo.Season > 0 && mediaParseInfo.MinEpisode > 0 && mediaParseInfo.MaxEpisode > mediaParseInfo.MinEpisode {
+		if mediaParseInfo.Season >= 0 && mediaParseInfo.MinEpisode > 0 && mediaParseInfo.MaxEpisode > mediaParseInfo.MinEpisode {
 			if sourceItem.Enclosure.Length == "996973766" {
 				for _, season := range sonarrMediaInfo.Seasons {
 					if season.SeasonNumber == mediaParseInfo.Season {

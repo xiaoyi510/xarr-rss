@@ -77,10 +77,10 @@ func (this MatchV2) ParseMediaSeasonAndEpisode(torrentTitleParse *torrent_title_
 		// 需要自动搜索
 
 		// 判断是否已经找到对应剧
-		if torrentTitleParse.Season > 0 {
+		if torrentTitleParse.Season >= 0 {
 			// 找到季信息 则数据不用处理
 			infoDb := medias.MediaEpisodeService{}.GetSeasonEpisode(sonarrMediaInfo.SonarrId, torrentTitleParse.Season, torrentTitleParse.MinEpisode)
-			if infoDb != nil && infoDb.SeasonNumber > 0 {
+			if infoDb != nil && infoDb.SeasonNumber >= 0 {
 				// 找到数据库里面的绝对集信息
 				torrentTitleParse.AbsoluteMinEpisode = infoDb.AbsoluteEpisodeNumber
 			} else {
@@ -93,7 +93,7 @@ func (this MatchV2) ParseMediaSeasonAndEpisode(torrentTitleParse *torrent_title_
 						if torrentTitleParse.MinEpisode > seasonInfo.Statistics.EpisodeCount {
 							// 超过了当前季的总集数 则 按照绝对集进行查询
 							infoDb := medias.MediaEpisodeService{}.GetSeasonAbEpisode(sonarrMediaInfo.SonarrId, torrentTitleParse.Season, torrentTitleParse.MinEpisode)
-							if infoDb != nil && infoDb.SeasonNumber > 0 {
+							if infoDb != nil && infoDb.SeasonNumber >= 0 {
 								// 找到数据库里面的绝对集信息
 								torrentTitleParse.MinEpisode = infoDb.EpisodeNumber
 								torrentTitleParse.AbsoluteMinEpisode = infoDb.AbsoluteEpisodeNumber
@@ -126,7 +126,7 @@ func (this MatchV2) ParseMediaSeasonAndEpisode(torrentTitleParse *torrent_title_
 				logsys.Error("异常媒体:%d %s %s 没有剧集", "auto", sonarrMediaInfo.SonarrId, sonarrMediaInfo.OriginalTitle, sonarrMediaInfo.CnTitle)
 			}
 
-			if infoDb != nil && infoDb.SeasonNumber > 0 {
+			if infoDb != nil && infoDb.SeasonNumber >= 0 {
 				// 找到数据库中绝对集信息
 				torrentTitleParse.Season = infoDb.SeasonNumber
 				if torrentTitleParse.MaxEpisode > 0 && torrentTitleParse.MinEpisode > 0 {
@@ -152,10 +152,10 @@ func (this MatchV2) ParseMediaSeasonAndEpisode(torrentTitleParse *torrent_title_
 		torrentTitleParse.AbsoluteMinEpisode = torrentTitleParse.MinEpisode
 		torrentTitleParse.AbsoluteMaxEpisode = torrentTitleParse.AbsoluteMinEpisode
 		// 去找绝对集
-		if torrentTitleParse.Season > 0 {
+		if torrentTitleParse.Season >= 0 {
 			// 找到季信息 则数据不用处理
 			infoDb := medias.MediaEpisodeService{}.GetSeasonEpisode(sonarrMediaInfo.SonarrId, torrentTitleParse.Season, torrentTitleParse.MinEpisode)
-			if infoDb != nil && infoDb.SeasonNumber > 0 {
+			if infoDb != nil && infoDb.SeasonNumber >= 0 {
 				// 找到数据库里面的绝对集信息
 				torrentTitleParse.AbsoluteMinEpisode = infoDb.AbsoluteEpisodeNumber
 				torrentTitleParse.AbsoluteMaxEpisode = torrentTitleParse.AbsoluteMinEpisode
@@ -175,7 +175,7 @@ func (this MatchV2) ParseMediaSeason(minEpisode, parseedSeason, season int, sona
 
 		// 判断是否已经匹配到结果了
 		season = parseedSeason
-		if season > 0 {
+		if season >= 0 {
 			return season, minEpisode
 		}
 

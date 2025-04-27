@@ -165,7 +165,7 @@ func (this ApiV1Medias) TestReg(c *gin.Context) {
 			}
 		}
 
-		if v.Season > 0 {
+		if v.Season >= 0 {
 			matchString += " 匹配季数:" + strconv.Itoa(v.Season)
 		}
 		//if v.OtherInfo.Language != "" {
