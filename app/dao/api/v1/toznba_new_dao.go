@@ -671,7 +671,7 @@ func (this ApiTorznabNewDao) matchItems(query, queryTitle, episode, seasonStr, t
 				// 允许搜索
 			} else {
 				// 如果有季的话 就不判断 0了
-				if v.Season > 0 {
+				if v.Season >= 0 {
 
 				} else {
 					// 不允许搜索
@@ -681,8 +681,8 @@ func (this ApiTorznabNewDao) matchItems(query, queryTitle, episode, seasonStr, t
 			}
 		}
 
-		if season > 0 {
-			if v.Season != season && v.Season > 0 {
+		if season >= 0 {
+			if v.Season != season && v.Season >= 0 {
 				continue
 			}
 		}

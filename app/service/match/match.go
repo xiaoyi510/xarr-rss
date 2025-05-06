@@ -414,7 +414,7 @@ func (this MediaMatchService) ParseMediaSeason(minEpisode, season int, sonarrMed
 		//		season = helper.StrToInt(searchSeason)
 		//	}
 		//}
-		if season > 0 {
+		if season >= 0 {
 			return season, minEpisode
 		}
 

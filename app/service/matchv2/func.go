@@ -95,7 +95,7 @@ func (this MatchV2) getTitle(groupMedia *dbmodel.GroupMedia, mediaParseInfo *tor
 	}
 
 	season := ""
-	if mediaParseInfo.Season > 0 {
+	if mediaParseInfo.Season >= 0 {
 		season = fmt.Sprintf("S%02d", mediaParseInfo.Season) // 季
 	}
 	episode := ""
